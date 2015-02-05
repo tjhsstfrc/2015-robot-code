@@ -41,8 +41,8 @@ public class Robot extends SampleRobot {
     final int leftJoystickChannel	= 1;
     
     public Robot() {
-        //myRobot = new RobotDrive(0, 1);
-        //myRobot.setExpiration(0.1);
+       // myRobot = new RobotDrive(0, 1);
+//        myRobot.setExpiration(0.1);
 
 
     	frontLeft = new Talon(7);
@@ -116,42 +116,43 @@ public class Robot extends SampleRobot {
     		// ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 
     		
-    		ctrlThresh = .2;									// the point at which we want to sense joystick action
-    		recip = 1-ctrlThresh;								// = 0.8
+    		
+    		ctrlThresh = .2;
+    		recip = 1-ctrlThresh;
 
-    		rightAxis = rightStick.getRawAxis(0);				// right joystick, y (up/down) axis
-    		strafeAxis = rightStick.getRawAxis(1);				// right joystick, x (left/right) axis; this is 
-    															///   arbitrary and could have been the left stick
-    		leftAxis = leftStick.getRawAxis(0);					// left joystick, y axis
+    		rightAxis = rightStick.getRawAxis(0);
+    		strafeAxis = rightStick.getRawAxis(1);
+    		leftAxis = leftStick.getRawAxis(0);
 
-    		rightDir = rightAxis/Math.abs(rightAxis);			// forward or backward (+1 or -1)
-    		strafeDir = strafeAxis/Math.abs(strafeAxis);		// 			''
-    		leftDir = leftAxis/Math.abs(leftAxis);				//			''
+    		rightDir = rightAxis/Math.abs(rightAxis);
+    		strafeDir = strafeAxis/Math.abs(strafeAxis);
+    		leftDir = leftAxis/Math.abs(leftAxis);
 
-    		right = 0;											// right input formatted for range of detected values [0.2,1]
-    		left = 0;											// left input formatted
-    		strafe = 0;											// strafe input formatted
+    		right = 0;
+    		left = 0;
+    		strafe = 0;
 
-    		if(Math.abs(rightAxis) > ctrlThresh)				// user moved stick beyond threshold
-    		{right = (rightAxis-ctrlThresh*rightDir)/recip;}	// format right: scale back, set direction, proportion it
-    		if(Math.abs(strafeAxis) > ctrlThresh)				
-    		{strafe = (strafeAxis-ctrlThresh*strafeDir)/recip;} // format left...
+    		if(Math.abs(rightAxis) > ctrlThresh)
+    		{right = (rightAxis-ctrlThresh*rightDir)/recip;}
+    		if(Math.abs(strafeAxis) > ctrlThresh)
+    		{strafe = (strafeAxis-ctrlThresh*strafeDir)/recip;}
     		if(Math.abs(leftAxis) > ctrlThresh)
-    		{left = (leftAxis-ctrlThresh*leftDir)/recip;}		// format strafe...
+    		{left = (leftAxis-ctrlThresh*leftDir)/recip;}
 
 
     		rightDir = right/Math.abs(right);
-    		rightPower = (Math.abs(right*mult) + minPower) * rightDir; 		// re-proportion for power's range, strip direction,
-    																		///   and then add back threshold and direction.
+    		rightPower = (Math.abs(right*mult) + minPower) * rightDir;
+
     		leftDir = left/Math.abs(left);
-    		leftPower = (Math.abs(left*mult) + minPower) * leftDir;			// 		''
+    		leftPower = (Math.abs(left*mult) + minPower) * leftDir;
 
     		strafeDir = strafe/Math.abs(strafe);
-    		strafePower = (Math.abs(strafe*mult) + minPower) * strafeDir;	// 		''
-    		
+    		strafePower = (Math.abs(strafe*mult) + minPower) * strafeDir;
 
-    		frontRight.set(rightPower);							// set all the motors with the powers we
-    		backRight.set(rightPower);							///   calculated above : drive!
+
+
+    		frontRight.set(rightPower);
+    		backRight.set(rightPower);
     		frontLeft.set(leftPower);
     		backLeft.set(leftPower); 
     		frontStrafe.set(strafePower);
