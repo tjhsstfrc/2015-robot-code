@@ -50,10 +50,10 @@ public class Robot extends SampleRobot {
     DoubleSolenoid solenoid;
 
     public Robot() {
-    	frontLeft = new Talon(4);				// Motor in port 4
-    	frontRight = new Talon(2);				// Motor in port 2
-    	backLeft = new Talon(3);				// Motor in port 3
-    	backRight = new Talon(1);				// Motor in port 1
+    	frontLeft = new Talon(4);
+    	frontRight = new Talon(2);
+    	backLeft = new Talon(3);
+    	backRight = new Talon(1);
         rightStick = new Joystick(rightJoystickChannel);
         leftStick = new Joystick(leftJoystickChannel);
         compressor = new Compressor(); //Plugged into Digital I/O 2nd # is pressure switch, 4th # is spike, other #s are module
@@ -65,7 +65,7 @@ public class Robot extends SampleRobot {
      */
     public void autonomous() {
         robotDrive.setSafetyEnabled(false);  
-        System.out.println("Autonomous");  //Nothing else as of right now
+        System.out.println("Autonomous");
     }
 
     /**
@@ -94,54 +94,53 @@ public class Robot extends SampleRobot {
     	double backRightPower;
     	
     	//System.out.println("operator control");
-    	compressor.start();								// turn on the compressor
+    	compressor.start();
     	
     	
     	while(isOperatorControl()&&isEnabled()){
     	
         //robotDrive.setSafetyEnabled(true);
     		ctrlThresh = .2;
-      	     recip = 1-ctrlThresh;						// = 0.8
-      	     fAxis = rightStick.getRawAxis(0);			// forward axis on right stick y (up/down) axis
-            sAxis = rightStick.getRawAxis(1);			// strafe axis on right stick x (left/right) axis
-            rAxis = -1 * leftStick.getRawAxis(0);		// rotate axis on left stick y (up/down) axis: FLIPPED.
+      	     recip = 1-ctrlThresh;
+      	     fAxis = rightStick.getRawAxis(0);
+            sAxis = rightStick.getRawAxis(1);
+            rAxis = -1 * leftStick.getRawAxis(0);
             
-      	     fDir = fAxis/Math.abs(fAxis);				// +1 or -1
-      	     sDir = sAxis/Math.abs(sAxis);				//   ''
-      	     rDir = rAxis/Math.abs(rAxis);				//   ''
+      	     fDir = fAxis/Math.abs(fAxis);
+      	     sDir = sAxis/Math.abs(sAxis);
+      	     rDir = rAxis/Math.abs(rAxis);
       	     
       	     forward = 0;
       	     rotate = 0;
       	     strafe = 0;
       	     
-      	     if(Math.abs(fAxis) > ctrlThresh)			// user moved stick beyond threshold
-      		{forward = (fAxis-ctrlThresh*fDir)/recip;}	// format right: scale back, set direction, proportion it
+      	     if(Math.abs(fAxis) > ctrlThresh)
+      		{forward = (fAxis-ctrlThresh*fDir)/recip;}
       	     if(Math.abs(sAxis) > ctrlThresh)
-      		{strafe = (sAxis-ctrlThresh*sDir)/recip;}	// format left...
+      		{strafe = (sAxis-ctrlThresh*sDir)/recip;}
       	     if(Math.abs(rAxis) > ctrlThresh)
-      		{rotate = (rAxis-ctrlThresh*rDir)/recip;}	// format strafe...
+      		{rotate = (rAxis-ctrlThresh*rDir)/recip;}
                  
       	     
       	     frontLeftPower = (-1*forward - rotate + strafe);
       	     fDir = frontLeftPower/Math.abs(frontLeftPower);
-                   frontLeftPower = (Math.abs(frontLeftPower*mult) + minPower) * fDir;	// re-proportion for power's range, strip direction,
-																						///   and then add back threshold and direction.
+                   frontLeftPower = (Math.abs(frontLeftPower*mult) + minPower) * fDir;
                   
                    frontRightPower = (forward - rotate + strafe);
                    fDir = frontRightPower/Math.abs(frontRightPower);
-                   frontRightPower = (Math.abs(frontRightPower*mult) + minPower) * fDir;//      ''
+                   frontRightPower = (Math.abs(frontRightPower*mult) + minPower) * fDir;
 
                    backLeftPower = (-1*forward - rotate - strafe);
                    fDir = backLeftPower/Math.abs(backLeftPower);
-                   backLeftPower = (Math.abs(backLeftPower*mult) + minPower) * fDir;	//		''
+                   backLeftPower = (Math.abs(backLeftPower*mult) + minPower) * fDir;
 
                    backRightPower = (forward - rotate - strafe);
                    fDir = backRightPower/Math.abs(backRightPower);
-                   backRightPower = (Math.abs(backRightPower*mult) + minPower) * fDir;	//		''
+                   backRightPower = (Math.abs(backRightPower*mult) + minPower) * fDir;
 
-                   frontRight.set(frontRightPower);		// set the motors
+                   frontRight.set(frontRightPower);
                    frontLeft.set(frontLeftPower);
-                   backRight.set(backRightPower);
+                  backRight.set(backRightPower);
                    backLeft.set(backLeftPower); 
 
       	    
@@ -150,14 +149,14 @@ public class Robot extends SampleRobot {
 //    	System.out.println("Compressor Pressure Gauge: " + compressor.getPressureSwitchValue());
     	if(rightStick.getRawButton(5)){
     		System.out.println("button 5");
- 	       solenoid.set(DoubleSolenoid.Value.kForward);		// Pneumatic system:
+ 	       solenoid.set(DoubleSolenoid.Value.kForward);
     	}
     	else if(rightStick.getRawButton(4)){
  	    	System.out.println("button 4");
  	       solenoid.set(DoubleSolenoid.Value.kReverse);
  	    }
     	else{
-    		solenoid.set(DoubleSolenoid.Value.kOff);		// Pneumatic system: turn OFF
+    		solenoid.set(DoubleSolenoid.Value.kOff);
     	}
         Timer.delay(0.02);	// wait to avoid hogging CPU cycles
         
