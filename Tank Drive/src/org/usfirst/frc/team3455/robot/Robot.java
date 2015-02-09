@@ -1,6 +1,7 @@
 package org.usfirst.frc.team3455.robot;                                                           
                                                                                                   
                                                                                                   
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.SampleRobot;                                                         
 import edu.wpi.first.wpilibj.RobotDrive;                                                          
 import edu.wpi.first.wpilibj.Joystick;                                                            
@@ -31,10 +32,11 @@ public class Robot extends SampleRobot {
     Talon backLeft;                                                                               
     Talon backRight;                                                                              
     Talon frontStrafe;                                                                            
-    Talon backStrafe;                                                                             
+    Talon backStrafe;       
+    Encoder winchEncoder;
                                                                                                   
-    //Talon winchCim1;                                                                            
-    //Talon winchCim2;                                                                            
+    Talon winchCim1;                                                                            
+    Talon winchCim2;                                                                            
                                                                                                   
     // The channel on the driver station that the joystick is connected to                        
     final int rightJoystickChannel	= 0;                                                          
@@ -43,17 +45,26 @@ public class Robot extends SampleRobot {
     public Robot() {                                                                              
        // myRobot = new RobotDrive(0, 1);                                                         
 //        myRobot.setExpiration(0.1);                                                             
+    	winchEncoder = new Encoder(0, 1, false, Encoder.EncodingType.k1X);
+    	//winchEncoder.setMaxPeriod(.1);
+    	winchEncoder.setMinRate(10);
+    	//winchEncoder.setDistancePerPulse(5);
+    	winchEncoder.setReverseDirection(true);
+    	winchEncoder.setSamplesToAverage(7);                                                                                          
+           
+    	
+    	//PRACTICE CHASSIS
+    	frontLeft = new Talon(1);  //not spinning                                                               
+    	frontRight = new Talon(7);                                                                
+    	backLeft = new Talon(2);                                                                  
+    	backRight = new Talon(6);                                                                 
+    	frontStrafe = new Talon(0);                                                               
+    	backStrafe = new Talon(5);   //not spinning                                                             
                                                                                                   
-                                                                                                  
-    	frontLeft = new Talon(7);                                                                 
-    	frontRight = new Talon(1);                                                                
-    	backLeft = new Talon(6);                                                                  
-    	backRight = new Talon(2);                                                                 
-    	frontStrafe = new Talon(8);                                                               
-    	backStrafe = new Talon(5);                                                                
-                                                                                                  
-    	//winchCim1 = new Talon(3);                                                               
-    	//winchCim2 = new Talon(2);                                                               
+    	winchCim1 = new Talon(8);                                                               
+    	winchCim2 = new Talon(9);   
+    	
+    	
                                                                                                   
     	rightStick = new Joystick(rightJoystickChannel);                                          
     	leftStick = new Joystick(leftJoystickChannel);                                            
@@ -82,7 +93,10 @@ public class Robot extends SampleRobot {
     	double leftDir;                                                                           
     	double rightPower;                                                                        
     	double leftPower;                                                                         
-    	double strafePower;                                                                       
+    	double strafePower;       
+    	
+    	int winchCount;
+    	boolean winchDirection;
                                                                                                   
     	//    	double frontLeftPower;                                                            
     	//    	double frontRightPower;                                                           
@@ -115,44 +129,45 @@ public class Robot extends SampleRobot {
     		//                                                                                    
     		// ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~                          
                                                                                                   
-    		ctrlThresh = .2;                                                                      
-    		recip = 1-ctrlThresh;                                                                 
+    		ctrlThresh = .2;                                    // the point at which we want to sense joystick action                                 
+    		recip = 1-ctrlThresh;              		            // = 0.8                                                      
                                                                                                   
-    		rightAxis = rightStick.getRawAxis(1);                                                 
-    		strafeAxis = rightStick.getRawAxis(0);                                                
-    		leftAxis = leftStick.getRawAxis(1);                                                   
+    		rightAxis = rightStick.getRawAxis(1);				// right joystick, y (up/down) axis
+    		strafeAxis = rightStick.getRawAxis(0);				// right joystick, x (left/right) axis; this is 
+    															///   arbitrary and could have been the left stick
+    		leftAxis = leftStick.getRawAxis(1);					// left joystick, y axis
                                                                                                   
-    		rightDir = rightAxis/Math.abs(rightAxis);                                             
-    		strafeDir = strafeAxis/Math.abs(strafeAxis);                                          
-    		leftDir = leftAxis/Math.abs(leftAxis);                                                
+    		rightDir = rightAxis/Math.abs(rightAxis);			// forward or backward (+1 or -1)
+    		strafeDir = strafeAxis/Math.abs(strafeAxis);       	// 			''                                   
+    		leftDir = leftAxis/Math.abs(leftAxis);              // 			''                                  
                                                                                                   
-    		right = 0;                                                                            
-    		left = 0;                                                                             
-    		strafe = 0;                                                                           
+    		right = 0;                                          // right input formatted for range of detected values [0.2,1]                                
+    		left = 0;                                           // left input formatted                          
+    		strafe = 0;                                         // strafe input formatted        
                                                                                                   
-    		if(Math.abs(rightAxis) > ctrlThresh)                                                  
-    		{right = (rightAxis-ctrlThresh*rightDir)/recip;}                                      
+    		if(Math.abs(rightAxis) > ctrlThresh)               	// user moved stick beyond threshold                       
+    		{right = (rightAxis-ctrlThresh*rightDir)/recip;}    // format right: scale back, set direction, proportion it                                
     		if(Math.abs(strafeAxis) > ctrlThresh)                                                 
-    		{strafe = (strafeAxis-ctrlThresh*strafeDir)/recip;}                                   
+    		{strafe = (strafeAxis-ctrlThresh*strafeDir)/recip;} // format left...                                  
     		if(Math.abs(leftAxis) > ctrlThresh)                                                   
-    		{left = (leftAxis-ctrlThresh*leftDir)/recip;}                                         
+    		{left = (leftAxis-ctrlThresh*leftDir)/recip;}		// format strafe...                                         
                                                                                                   
                                                                                                   
     		rightDir = right/Math.abs(right);                                                     
-    		rightPower = (Math.abs(right*mult) + minPower) * rightDir;                            
-                                                                                                  
+    		rightPower = (Math.abs(right*mult) + minPower) * rightDir; 		// re-proportion for power's range, strip direction,
+																			///   and then add back threshold and direction.                                                                                                        
     		leftDir = left/Math.abs(left);                                                        
-    		leftPower = (Math.abs(left*mult) + minPower) * leftDir;                               
+    		leftPower = (Math.abs(left*mult) + minPower) * leftDir;			// 		''                               
                                                                                                   
     		strafeDir = strafe/Math.abs(strafe);                                                  
-    		strafePower = (Math.abs(strafe*mult) + minPower) * strafeDir;                         
+    		strafePower = (Math.abs(strafe*mult) + minPower) * strafeDir;	// 		''                         
                                                                                                   
                                                                                                   
                                                                                                   
-    		frontRight.set(rightPower);                                                           
-    		backRight.set(rightPower);                                                            
-    		frontLeft.set(leftPower);                                                             
-    		backLeft.set(leftPower);                                                              
+    		frontRight.set(rightPower);						// set all the motors with the powers we                                                           
+    		backRight.set(rightPower);						///   calculated above : drive!                                                            
+    		frontLeft.set(-1*leftPower);                                                             
+    		backLeft.set(-1*leftPower);                                                              
     		frontStrafe.set(strafePower);                                                         
     		backStrafe.set(-1*strafePower);                                                          
                                                                                                   
@@ -163,19 +178,31 @@ public class Robot extends SampleRobot {
     		// ************ BEGIN WINCH CODE ***********                                          
     		// We need to code the winch to help raise and lower the elevator                     
     		// This is just one option between the winch and the lead screw.                      
-    		                                                                                      
-    		/*if(rightStick.getRawButton(4))                                                      
+    		  /*                                                                                    
+    		if(rightStick.getRawButton(5))                                                      
+             {     
+    			 winchEncoder.reset();							// reset the pulse count
+            	 winchCim1.set(.5);                         	// set winchCim1 to 0.5 power (upwards)                                     
+            	 winchCim2.set(.5); 							// set winchCim2 to 0.5 power
+            	                                                             
+             }  
+    		else if(rightStick.getRawButton(4))
+    		{
+    			
+    			winchEncoder.reset();							// reset the pulse count
+           	 	winchCim1.set(-.5);                             // set winchCim1 to -0.5 power (downwards)                               
+           	 	winchCim2.set(-.5);	 							// set winchCim2 to -0.5 power
+    		}
+                                                                                              
+             else if(rightStick.getRawButton(2))                                                       
              {                                                                                    
-            	 winchCim1.set(.5);                                                               
-            	 winchCim2.set(.5);                                                               
-             }                                                                                    
-                                                                                                  
-             if(rightStick.getRawButton(5))                                                       
-             {                                                                                    
-            	 winchCim1.set(-.5);                                                              
-            	 winchCim2.set(-.5);                                                              
-             } */                                                                                 
-    		                                                                                      
+            	 winchCim1.set(0);  							// set winchCim1 to 0 power (off/stop)                                                          
+            	 winchCim2.set(0);								// set winchCim2 to 0 pwoer (off/stop)
+            	 winchCount = winchEncoder.get();				// get the pulse count from the encoder
+            	 System.out.println("Count: "+ winchCount);		// print the pulse count
+            	                                                               
+             }                                                                                
+    		          */                                                                            
     		// ********** END OF WINCH CODE **********                                            
     		//=======================================================================             
     		                                                                                      
