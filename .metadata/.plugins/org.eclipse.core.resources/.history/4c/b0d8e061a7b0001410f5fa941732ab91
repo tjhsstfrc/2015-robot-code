@@ -111,14 +111,14 @@ public class Robot extends SampleRobot {
     		// Diagram for the wheels of the robot below.                                         
                                                                                                   
     		//      L         S         R                                                         
-    		//   /--------------------------\                                            
-    		//	 ||------------------------||                                               
-    		//   ||          [][]          ||                                               
-    		//   || []                  [] ||                                               
-    		//   || []                  [] ||                                            
-    		//   ||                        ||                                          
-    		//   ||                        ||                                          
-    		//   ||                        ||                                         
+    		//   /--------------------------\                                                     
+    		//	 ||------------------------||                                                     
+    		//   ||          [][]          ||                                                     
+    		//   || []                  [] ||                                                     
+    		//   || []                  [] ||                                                     
+    		//   ||                        ||                                                     
+    		//   ||                        ||                                                     
+    		//   ||                        ||                                                     
     		//   ||                        ||                                                     
     		//   ||                        ||                                                     
     		//   || []                  [] ||                                                     
@@ -162,13 +162,14 @@ public class Robot extends SampleRobot {
     		strafeDir = strafe/Math.abs(strafe);                                                  
     		strafePower = (Math.abs(strafe*mult) + minPower) * strafeDir;	// 		''                         
                                                                                                   
-    		
-//    		frontRight.set(rightPower);						// set all the motors with the powers we                                                           
-//    		backRight.set(rightPower);						///   calculated above : drive!                                                            
-//    		frontLeft.set(-1*leftPower);                                                             
-//    		backLeft.set(-1*leftPower);                                                              
-//    		frontStrafe.set(strafePower);                                                         
-//    		backStrafe.set(-1*strafePower);                                                          
+                                                                                                  
+                                                                                                  
+    		frontRight.set(rightPower);						// set all the motors with the powers we                                                           
+    		backRight.set(rightPower);						///   calculated above : drive!                                                            
+    		frontLeft.set(-1*leftPower);                                                             
+    		backLeft.set(-1*leftPower);                                                              
+    		frontStrafe.set(strafePower);                                                         
+    		backStrafe.set(-1*strafePower);                                                          
                                                                                                   
     		//myRobot.tankDrive(leftStick, rightStick);                                           
     		                                                                                      
@@ -177,7 +178,7 @@ public class Robot extends SampleRobot {
     		// ************ BEGIN WINCH CODE ***********                                          
     		// We need to code the winch to help raise and lower the elevator                     
     		// This is just one option between the winch and the lead screw.                      
-    		                                                                                      
+    		  /*                                                                                    
     		if(rightStick.getRawButton(5))                                                      
              {     
     			 winchEncoder.reset();							// reset the pulse count
@@ -193,7 +194,7 @@ public class Robot extends SampleRobot {
            	 	winchCim2.set(-.5);	 							// set winchCim2 to -0.5 power
     		}
                                                                                               
-             else //if(rightStick.getRawButton(2))                                                       
+             else if(rightStick.getRawButton(2))                                                       
              {                                                                                    
             	 winchCim1.set(0);  							// set winchCim1 to 0 power (off/stop)                                                          
             	 winchCim2.set(0);								// set winchCim2 to 0 pwoer (off/stop)
@@ -201,7 +202,7 @@ public class Robot extends SampleRobot {
             	 System.out.println("Count: "+ winchCount);		// print the pulse count
             	                                                               
              }                                                                                
-    		                                                                                    
+    		          */                                                                            
     		// ********** END OF WINCH CODE **********                                            
     		//=======================================================================             
     		                                                                                      
