@@ -198,8 +198,9 @@ public class Robot extends SampleRobot {
             	 winchCim1.set(0);  							// set winchCim1 to 0 power (off/stop)                                                          
             	 winchCim2.set(0);								// set winchCim2 to 0 pwoer (off/stop)
             	 winchCount = winchEncoder.get();				// get the pulse count from the encoder
-            	 System.out.println("Count: "+ winchCount);		// print the pulse count                                                            
-             }     cr4r45gsese                                                                           
+            	 System.out.println("Count: "+ winchCount);		// print the pulse count
+            	                                                               
+             }                                                                                
     		                                                                                    
     		// ********** END OF WINCH CODE **********                                            
     		//=======================================================================             
